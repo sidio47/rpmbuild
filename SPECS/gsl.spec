@@ -252,7 +252,7 @@ EOF
 cat > $RPM_BUILD_ROOT/%{MODULE_DIR}/.version.%{version} << 'EOF'
 #%Module3.1.1#################################################
 ##
-## version file for %{BASENAME}%{version}
+## version file for %{pkg_base_name}/%{version}
 ##
 
 set     ModulesVersion      "%{version}"
