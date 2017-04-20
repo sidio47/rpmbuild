@@ -168,15 +168,10 @@ export   ncores=12
 
 ./configure                              \
 --prefix=%{INSTALL_DIR}                  \
---enable-fast=O3                         \
---with-pmi=pmi2                          \
---with-pm=slurm                          \
---enable-romio                           \
---with-file-system=nfs                   \
+--enable-cxx                             \
+--enable-fortran=all                     \
+--enable-fast-install                    \
 --disable-mcast                          \
---disable-silent-rules
-
-#--with-slurm=/opt/slurm/default          \
 
 make VERBOSE=1 -j ${ncores}
 make VERBOSE=1 -j ${ncores} install

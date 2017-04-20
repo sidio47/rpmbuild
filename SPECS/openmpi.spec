@@ -194,8 +194,8 @@ export ncores=12
 --with-verbs                                     \
 --disable-dlopen                                 \
 --disable-oshmem                                 \
---without-slurm                                  \
---without-pmi                                    \
+--with-slurm                                     \
+--with-pmi-libdir=/usr/lib64                     \
 --enable-static                                  \
 --disable-shared
 
