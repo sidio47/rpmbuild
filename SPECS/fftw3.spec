@@ -156,19 +156,17 @@ echo "Building the modulefile?: %{BUILD_MODULEFILE}"
   # Insert Build/Install Instructions Here
   #========================================
 
-%if "%{is_intel}" == "1"
-  export CFLAGS="-O3 -xSSE4.2"
-  export LDFLAGS="-O3 -xSSE4.2"
-%endif
 
-%if "%{is_gcc}" == "1"
-  export CFLAGS="-O3 -march=westmere -mtune=westmere"
-  export LDFLAGS="-O3 -march=westmere -mtune=westmere"
-%endif
+#
+# Insert vectorization and optimization flags
+# for gcc-specific builds
+#
 
-export ncores=28
+export ncores=12
 
-## Make double-precision version w/ mpi support
+##
+## Configure and make double-precision version w/ mpi support
+##
 ./configure                   \
 --with-pic                    \
 --enable-shared               \
@@ -182,20 +180,14 @@ export ncores=28
 make -j ${ncores}
 make DESTDIR=$RPM_BUILD_ROOT install
 
-## Make single-precision version w/ mpi support
 make clean
+##
+## Configure and make single-precision version /w mpi support
+##
 
-./configure                   \
---with-pic                    \
---enable-single               \
---enable-shared               \
---enable-openmp               \
---enable-threads              \
---disable-dependency-tracking \
---enable-mpi                  \
---enable-sse                  \
---enable-sse2                 \
---prefix=%{INSTALL_DIR}
+#
+# Insert configure for single-precision version
+#
 
 make -j ${ncores}
 make DESTDIR=$RPM_BUILD_ROOT install
@@ -257,26 +249,17 @@ Version %{version}
 
 help(help_message,"\n")
 
-whatis("Name: %{pkg_base_name}")
-whatis("Version: %{version}")
-whatis("Category: library, mathematics")
-whatis("Keywords: Library, Mathematics, FFT, Parallel")
-whatis("URL: http://www.fftw.org")
-whatis("Description: Numerical library, contains discrete Fourier transformation")
+-- Fill out the whatis section; use previous wokr
+
 
 local fftw_dir="%{INSTALL_DIR}"
 
-setenv("TACC_%{MODULE_VAR}_DIR",fftw_dir)
-setenv("TACC_%{MODULE_VAR}_LIB",pathJoin(fftw_dir,"lib"))
-setenv("TACC_%{MODULE_VAR}_INC",pathJoin(fftw_dir,"include"))
+-- Set up DIR, LIB, and INC TACC variables
+
 
 --
--- Append paths
+-- Append to LD_LIBRARY_PATH, PATH, MANPATH, and PKG_CONFIG_PATH
 --
-append_path("LD_LIBRARY_PATH",pathJoin(fftw_dir,"lib"))
-append_path("PATH",pathJoin(fftw_dir,"bin"))
-append_path("MANPATH",pathJoin(fftw_dir,"man"))
-append_path("PKG_CONFIG_PATH",pathJoin(fftw_dir,"lib/pkgconfig"))
 
 EOF
 
