@@ -164,20 +164,12 @@ echo "Building the modulefile?: %{BUILD_MODULEFILE}"
   export LDFLAGS="-O3 -xSSE4.2"
 %endif
 
-%if "%{is_gcc}" == "1" 
-  export CFLAGS="-O3 -march=westmere -mtune=westmere"
-  export CPPFLAGS="-O3 -march=westmere -mtune=westmere"
-  export LDFLAGS="-O3 -march=westmere -mtune=westmere"
-%endif
  
-  export ncores=12 
 
-  ./configure \
-  --prefix=%{INSTALL_DIR}
 
-  make -j ${ncores}
-  make DESTDIR=$RPM_BUILD_ROOT install
-  
+
+
+ 
 #-----------------------  
 %endif # BUILD_PACKAGE |
 #-----------------------
