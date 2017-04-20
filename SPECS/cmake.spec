@@ -157,13 +157,13 @@ echo "Building the modulefile?: %{BUILD_MODULEFILE}"
   # Insert Build/Install Instructions Here
   #========================================
  
-  export ncores=12
-  export CFLAGS="-mtune=generic"
-  export LDFLAGS="-mtune=generic"
-  ./bootstrap --prefix=%{INSTALL_DIR}
-  make -j ${ncores}
-  make DESTDIR=$RPM_BUILD_ROOT install -j ${ncores}
-  
+
+
+
+
+
+
+ 
 #-----------------------  
 %endif # BUILD_PACKAGE |
 #-----------------------
