@@ -191,12 +191,16 @@ echo "Building the modulefile?: %{BUILD_MODULEFILE}"
   
 # Write out the modulefile associated with the application
 cat > $RPM_BUILD_ROOT/%{MODULE_DIR}/%{MODULE_FILENAME} << 'EOF'
+
+-- We should add a short introductory description of GSL. Perhaps look 
+-- above and/or go take a look at the GSL website
+
 local help_msg=[[
-The GNU Scientific Library (GSL) is a numerical library for C and C++
-programmers. It is free software under the GNU General Public License.  The
-library provides a wide range of mathematical routines such as random number
-generators, special functions and least-squares fitting. There are over 1000
-functions in total with an extensive test suite.
+
+--
+-- Insert GSL intro description here
+--
+
 
 The %{MODULE_VAR} module defines the following environment variables:
 TACC_%{MODULE_VAR}_DIR, TACC_%{MODULE_VAR}_LIB, TACC_%{MODULE_VAR}_INC and
@@ -219,25 +223,50 @@ Version %{version}
 
 ]]
 
---help(help_msg)
+-- Now that the help message has been defined, we invoke it below 
+-- with "help(help_msg)"
+
 help(help_msg)
 
-whatis("Name: %{pkg_base_name}")
-whatis("Version: %{pkg_version}")
+--
+-- Next, let us fill out some metadata tags
+--
+
+-- Can we use an already defined macro for Name and Version?
+whatis("Name: ???")
+whatis("Version: ???")
 whatis("Category: library, mathematics")
 whatis("Keywords: Library, Mathematics")
 whatis("URL: https://www.gnu.org/software/gsl")
 whatis("Description: Numerical library for C/C++ programmers")
 
--- Create environment variables.
-local gsl_dir           = "%{INSTALL_DIR}"
+--
+-- Create environment variables
+--
 
-prepend_path(    "PATH",                pathJoin(gsl_dir, "bin"))
-prepend_path(    "LD_LIBRARY_PATH",     pathJoin(gsl_dir, "lib"))
-setenv( "TACC_%{MODULE_VAR}_DIR",                gsl_dir)
-setenv( "TACC_%{MODULE_VAR}_INC",       pathJoin(gsl_dir, "include"))
-setenv( "TACC_%{MODULE_VAR}_LIB",       pathJoin(gsl_dir, "lib"))
-setenv( "TACC_%{MODULE_VAR}_BIN",       pathJoin(gsl_dir, "bin"))
+-- What should we set gsl_dir to if we wish to pick up the 
+-- correct installation path?
+local gsl_dir           = "???"
+
+-- We need to add the gsl bin directory to our PATH
+-- We need to add the gsl lib directory to our LD_LIBRARY_PATH
+-- How can we use the gsl_dir variable defined above for this task?
+-- Check out Lmod documentation here: https://lmod.readthedocs.io/en/latest
+-- You might look into the pathJoin fuction for help
+
+-- Let us PREPEND the gsl bin directory to our PATH
+-- Let us APPEND  the gsl lib directory to our LD_LIBRARY_PATH
+
+--
+-- Next, to make building other packages easier, we provide environment
+-- variables to anyone who loads this module. On TACC systems, we prepend
+-- "TACC_" on these variables to keep the env from getting cluttered.
+--
+-- Use the setenv function to add four environment variables. One for the
+-- base-level directory, one for the include directory, one for the lib
+-- directory, and one for the bin directory. Query other TACC modules,
+-- perhaps on Stampede with "module show foo" to see how they do it.
+
 
 EOF
   
