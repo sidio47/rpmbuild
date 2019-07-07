@@ -156,25 +156,8 @@ echo "Building the modulefile?: %{BUILD_MODULEFILE}"
   #========================================
   # Insert Build/Install Instructions Here
   #========================================
+ 
 
-echo "PWD:            $(pwd)"
-echo "_topdir:        %{_topdir}"
-echo "_builddir:      %{_builddir}"
-echo "_rpmdir:        %{_rpmdir}"
-echo "_sourcedir      %{_sourcedir}"
-echo "_specdir:       %{_specdir}"
-echo "_srcrpmdir:     %{_srcrpmdir}"
-echo "_buildrootdir:  %{_buildrootdir}"
-echo "RPM_BUILD_ROOT: $RPM_BUILD_ROOT"
-echo "INSTALL_DIR:    %{INSTALL_DIR}"
-echo "MODULE_DIR:     %{MODULE_DIR}"
-
-export ncores=16
-export CFLAGS="-mtune=generic"
-export LDFLAGS="-mtune=generic"
-./bootstrap --prefix=%{INSTALL_DIR}
-make -j ${ncores}
-make DESTDIR=$RPM_BUILD_ROOT install -j ${ncores}
 
 
 

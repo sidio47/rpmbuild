@@ -25,9 +25,10 @@ Summary: A Nice little relocatable skeleton spec file example.
 
 # Create some macros (spec file variables)
 %define major_version 2
-%define minor_version 2
+%define minor_version 3
+%define patch_version 1
 
-%define pkg_version %{major_version}.%{minor_version}
+%define pkg_version %{major_version}.%{minor_version}.%{patch_version}
 %define pkg_version_dash %{major_version}_%{minor_version}
 
 ### Toggle On/Off ###
@@ -149,8 +150,6 @@ echo "Building the modulefile?: %{BUILD_MODULEFILE}"
 #------------------------
 
   mkdir -p $RPM_BUILD_ROOT/%{INSTALL_DIR}
-  mkdir -p %{INSTALL_DIR}
-  mount -t tmpfs tmpfs %{INSTALL_DIR}
   
   #######################################
   ##### Create TACC Canary Files ########
@@ -174,17 +173,7 @@ export   ncores=12
 --disable-mcast                          \
 
 make VERBOSE=1 -j ${ncores}
-make VERBOSE=1 -j ${ncores} install
-
-
-if [ ! -d $RPM_BUILD_ROOT/%{INSTALL_DIR} ]; then
-  mkdir -p $RPM_BUILD_ROOT/%{INSTALL_DIR}
-fi
-
-cp -r %{INSTALL_DIR}/ $RPM_BUILD_ROOT/%{INSTALL_DIR}/..
-umount %{INSTALL_DIR}/
-
-
+make DESTDIR=$RPM_BUILD_ROOT VERBOSE=1 -j ${ncores} install
   
 #-----------------------  
 %endif # BUILD_PACKAGE |
