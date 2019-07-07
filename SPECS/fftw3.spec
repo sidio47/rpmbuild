@@ -26,7 +26,7 @@ Summary: A Nice little relocatable skeleton spec file example.
 # Create some macros (spec file variables)
 %define major_version 3
 %define minor_version 3
-%define micro_version 6
+%define micro_version 8
 
 %define pkg_version %{major_version}.%{minor_version}.%{micro_version}
 
@@ -56,7 +56,7 @@ License:   GPL
 Group:     System Environment/Base
 URL:       http://www.fftw.org
 Packager:  TACC - alamas@tacc.utexas.edu
-Source:    fftw-%{pkg_version}-pl2.tar.gz
+Source:    fftw-%{pkg_version}.tar.gz
 
 # Turn off debug package mode
 %define debug_package %{nil}
@@ -99,7 +99,7 @@ transforms or DCT/DST).
   # Delete the package installation directory.
   rm -rf $RPM_BUILD_ROOT/%{INSTALL_DIR}
 
-%setup -n fftw-%{pkg_version}-pl2
+%setup -n fftw-%{pkg_version}
 
 #-----------------------
 %endif # BUILD_PACKAGE |
@@ -162,6 +162,16 @@ echo "Building the modulefile?: %{BUILD_MODULEFILE}"
 # for gcc-specific builds
 #
 
+%if "%{is_intel}" == "1"
+  export CFLAGS="-O3 -xCORE-AVX2"
+  export LDFLAGS="-O3 -xCORE-AVX2"
+%endif
+
+%if "%{is_gcc}" == "1"
+  export CFLAGS="-O3 -march=haswell -mtune=haswell"
+  export LDFLAGS="-O3 -march=haswell -mtune=haswell"
+%endif
+
 export ncores=12
 
 ##
@@ -175,6 +185,8 @@ export ncores=12
 --disable-dependency-tracking \
 --enable-mpi                  \
 --enable-sse2                 \
+--enable-avx                  \
+--enable-avx2                 \
 --prefix=%{INSTALL_DIR}
 
 make -j ${ncores}
@@ -188,6 +200,26 @@ make clean
 #
 # Insert configure for single-precision version
 #
+
+make clean
+
+./configure                   \
+--with-pic                    \
+--enable-single               \
+--enable-shared               \
+--enable-openmp               \
+--enable-threads              \
+--disable-dependency-tracking \
+--enable-mpi                  \
+--enable-sse                  \
+--enable-sse2                 \
+--enable-avx                  \
+--enable-avx2                 \
+--prefix=%{INSTALL_DIR}
+
+make -j ${ncores}
+make DESTDIR=$RPM_BUILD_ROOT install
+
 
 make -j ${ncores}
 make DESTDIR=$RPM_BUILD_ROOT install
@@ -249,17 +281,31 @@ Version %{version}
 
 help(help_message,"\n")
 
--- Fill out the whatis section; use previous wokr
+-- Fill out the whatis section; use previous work
 
+whatis("Name: %{pkg_base_name}")
+whatis("Version: %{version}")
+whatis("Category: library, mathematics")
+whatis("Keywords: Library, Mathematics, FFT, Parallel")
+whatis("URL: http://www.fftw.org")
+whatis("Description: Numerical library, contains discrete Fourier transformation")
 
 local fftw_dir="%{INSTALL_DIR}"
 
 -- Set up DIR, LIB, and INC TACC variables
 
+setenv("TACC_%{MODULE_VAR}_DIR",fftw_dir)
+setenv("TACC_%{MODULE_VAR}_LIB",pathJoin(fftw_dir,"lib"))
+setenv("TACC_%{MODULE_VAR}_INC",pathJoin(fftw_dir,"include"))
 
 --
 -- Append to LD_LIBRARY_PATH, PATH, MANPATH, and PKG_CONFIG_PATH
 --
+
+append_path("LD_LIBRARY_PATH",pathJoin(fftw_dir,"lib"))
+append_path("PATH",pathJoin(fftw_dir,"bin"))
+append_path("MANPATH",pathJoin(fftw_dir,"man"))
+append_path("PKG_CONFIG_PATH",pathJoin(fftw_dir,"lib/pkgconfig"))
 
 EOF
 

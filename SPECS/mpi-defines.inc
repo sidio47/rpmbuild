@@ -21,12 +21,12 @@
 
 %if "%{is_openmpi}" == "1"
   %if %{undefined mpiV}
-    %define mpi_label 2_1
-    %define mpi_module_version 2.1.0
+    %define mpi_label 4_0
+    %define mpi_module_version 4.0.1
   %endif
-  %if "%{mpiV}" == "2_1"
-    %define mpi_label 2_1
-    %define mpi_module_version 2.1.0
+  %if "%{mpiV}" == "4_0"
+    %define mpi_label 4_0
+    %define mpi_module_version 4.0.1
   %endif
   %define mpi_fam     openmpi
   %define mpi_fam_ver openmpi_%{mpi_label}
@@ -53,12 +53,12 @@
 
 %if "%{is_mvapich2}" == "1"
   %if %{undefined mpiV}
-    %define mpi_label 2_2
-    %define mpi_module_version 2.2
+    %define mpi_label 2_3
+    %define mpi_module_version 2.3.1
   %endif
-  %if "%{mpiV}" == "2_2"
-    %define mpi_label 2_2
-    %define mpi_module_version 2.2
+  %if "%{mpiV}" == "2_3"
+    %define mpi_label 2_3
+    %define mpi_module_version 2.3.1
   %endif
   %define mpi_fam mvapich2
   %define mpi_fam_ver mvapich2_%{mpi_label}

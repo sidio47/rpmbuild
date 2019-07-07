@@ -25,7 +25,7 @@ Summary: A Nice little relocatable skeleton spec file example.
 
 # Create some macros (spec file variables)
 %define major_version 2
-%define minor_version 3
+%define minor_version 5
 
 %define pkg_version %{major_version}.%{minor_version}
 
@@ -158,16 +158,25 @@ echo "Building the modulefile?: %{BUILD_MODULEFILE}"
   # Insert Build/Install Instructions Here
   #========================================
   
- %if "%{is_intel}" == "1" 
-  export CFLAGS="-O3 -xSSE4.2"
-  export CPPFLAGS="-O3 -xSSE4.2" 
-  export LDFLAGS="-O3 -xSSE4.2"
+%if "%{is_intel}" == "1" 
+  export CFLAGS="-O3 -xCORE-AVX2"
+  export CPPFLAGS="-O3 -xCORE-AVX2" 
+  export LDFLAGS="-O3 -xCORE-AVX2"
 %endif
 
- 
+%if "%{is_gcc}" == "1"
+  export CFLAGS="-O3 -march=haswell -mtune=haswell"
+  export CPPFLAGS="-O3 -march=haswell -mtune=haswell"
+  export LDFLAGS="-O3 -march=haswell -mtune=haswell"
+%endif 
 
+export ncores=12
 
+./configure \
+--prefix=%{INSTALL_DIR}
 
+make -j ${ncores}
+make DESTDIR=$RPM_BUILD_ROOT -j ${ncores} install
 
  
 #-----------------------  
@@ -201,6 +210,13 @@ local help_msg=[[
 -- Insert GSL intro description here
 --
 
+The GNU Scientific Library (GSL) is a numerical library for C and C++
+programmers. It is free software under the GNU General Public License.
+
+The library provides a wide range of mathematical routines such as random
+number generators, special functions and least-squares fitting. There are over
+1000 functions in total with an extensive test suite.
+
 
 The %{MODULE_VAR} module defines the following environment variables:
 TACC_%{MODULE_VAR}_DIR, TACC_%{MODULE_VAR}_LIB, TACC_%{MODULE_VAR}_INC and
@@ -233,8 +249,8 @@ help(help_msg)
 --
 
 -- Can we use an already defined macro for Name and Version?
-whatis("Name: ???")
-whatis("Version: ???")
+whatis("Name: %{pkg_base_name}")
+whatis("Version: %{version}")
 whatis("Category: library, mathematics")
 whatis("Keywords: Library, Mathematics")
 whatis("URL: https://www.gnu.org/software/gsl")
@@ -246,7 +262,8 @@ whatis("Description: Numerical library for C/C++ programmers")
 
 -- What should we set gsl_dir to if we wish to pick up the 
 -- correct installation path?
-local gsl_dir           = "???"
+
+local gsl_dir           = "%{INSTALL_DIR}"
 
 -- We need to add the gsl bin directory to our PATH
 -- We need to add the gsl lib directory to our LD_LIBRARY_PATH
@@ -257,6 +274,9 @@ local gsl_dir           = "???"
 -- Let us PREPEND the gsl bin directory to our PATH
 -- Let us APPEND  the gsl lib directory to our LD_LIBRARY_PATH
 
+prepend_path(    "PATH",                pathJoin(gsl_dir, "bin"))
+append_path(     "LD_LIBRARY_PATH",     pathJoin(gsl_dir, "lib"))
+
 --
 -- Next, to make building other packages easier, we provide environment
 -- variables to anyone who loads this module. On TACC systems, we prepend
@@ -265,8 +285,12 @@ local gsl_dir           = "???"
 -- Use the setenv function to add four environment variables. One for the
 -- base-level directory, one for the include directory, one for the lib
 -- directory, and one for the bin directory. Query other TACC modules,
--- perhaps on Stampede with "module show foo" to see how they do it.
+-- perhaps on Stampede2 with "module show foo" to see how they do it.
 
+setenv( "TACC_%{MODULE_VAR}_DIR",                gsl_dir)
+setenv( "TACC_%{MODULE_VAR}_INC",       pathJoin(gsl_dir, "include"))
+setenv( "TACC_%{MODULE_VAR}_LIB",       pathJoin(gsl_dir, "lib"))
+setenv( "TACC_%{MODULE_VAR}_BIN",       pathJoin(gsl_dir, "bin"))
 
 EOF
   

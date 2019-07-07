@@ -3,7 +3,7 @@
 #-------------------------------------------------------------------
 
 Buildroot:       /var/tmp/%{name}-%{version}-buildroot
-%define _topdir  /admin/build/rpmbuild
+%define _topdir  /home/build/rpmbuild
 %define APPS     /opt/apps
 %define MODULES  modulefiles
 %define SPEC_DIR %{_topdir}/SPECS

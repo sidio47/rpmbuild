@@ -172,15 +172,20 @@ help(helpMsg)
 --------------------------------------------------------------------------
 -- Define TACC_SYSTEM and TACC_DOMAIN
 
-setenv("TACC_SYSTEM",  "ls4")
-setenv("TACC_DOMAIN",  "ls4")
+setenv("TACC_SYSTEM",  "chameleon")
+setenv("TACC_DOMAIN",  "chameleon")
 
 if (os.getenv("USER") ~= "root") then
   append_path("PATH",  ".")
 end
 
-load("gcc")
-load("mvapich2")
+try_load("gcc")
+try_load("openmpi")
+try_load("git")
+try_load("autotools")
+try_load("python")
+try_load("cmake")
+try_load("xalt")
 
 setenv("APPS","/opt/apps")
 prepend_path("MANPATH","/usr/local/man:/usr/share/man:/usr/X11R6/man:/usr/kerberos/man:/usr/man")

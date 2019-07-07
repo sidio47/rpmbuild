@@ -25,9 +25,9 @@ Summary: A Nice little relocatable skeleton spec file example.
 %define MODULE_VAR    OPENMPI
 
 # Create some macros (spec file variables)
-%define major_version 2
-%define minor_version 1
-%define micro_version 0
+%define major_version 4
+%define minor_version 0
+%define micro_version 1
 
 %define pkg_version %{major_version}.%{minor_version}.%{micro_version}
 %define pkg_version_dash %{major_version}_%{minor_version}
@@ -154,8 +154,6 @@ echo "Building the modulefile?: %{BUILD_MODULEFILE}"
 #------------------------
 
   mkdir -p $RPM_BUILD_ROOT/%{INSTALL_DIR}
-  mkdir -p %{INSTALL_DIR}
-  mount -t tmpfs tmpfs %{INSTALL_DIR}
     
   #######################################
   ##### Create TACC Canary Files ########
@@ -172,15 +170,15 @@ echo "Building the modulefile?: %{BUILD_MODULEFILE}"
  
 
 if [ "%{comp_fam}" == "gcc" ]; then
-  export CFLAGS="-march=westmere -mtune=westmere"
-  export CXXFLAGS="-march=westmere -mtune=westmere"
-  export FCFLAGS="-march=westmere -mtune=westmere"
-  export LDFLAGS="-march=westmere -mtune=westmere"
+  export CFLAGS="-march=haswell -mtune=haswell"
+  export CXXFLAGS="-march=haswell -mtune=haswell"
+  export FCFLAGS="-march=haswell -mtune=haswell"
+  export LDFLAGS="-march=haswell -mtune=haswell"
 elif [ "%{comp_fam}" == "intel" ]; then
-  export CFLAGS="-xSSE4.2"
-  export CXXFLAGS="-xSSE4.2"
-  export FCFLAGS="-xSSE4.2"
-  export LDFLAGS="-xSSE4.2"
+  export CFLAGS="-xCORE-AVX2"
+  export CXXFLAGS="-xCORE-AVX2"
+  export FCFLAGS="-xCORE-AVX2"
+  export LDFLAGS="-xCORE-AVX2"
 else
   echo "Unrecognized compiler! Exiting!"
   exit -1
@@ -197,21 +195,10 @@ export ncores=12
 --with-slurm                                     \
 --with-pmi-libdir=/usr/lib64                     \
 --enable-static                                  \
---disable-shared
+--enable-shared
 
 make -j ${ncores}
-make -j ${ncores} install
-
-
-if [ ! -d $RPM_BUILD_ROOT/%{INSTALL_DIR} ]; then
-  mkdir -p $RPM_BUILD_ROOT/%{INSTALL_DIR}
-fi
-
-cp -r %{INSTALL_DIR}/ $RPM_BUILD_ROOT/%{INSTALL_DIR}/..
-umount %{INSTALL_DIR}/
-  
-
-
+make DESTDIR=$RPM_BUILD_ROOT -j ${ncores} install
 
 #-----------------------  
 %endif # BUILD_PACKAGE |
